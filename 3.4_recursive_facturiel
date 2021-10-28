@@ -1,0 +1,10 @@
+program {
+fakturiel(int fact)->int{
+	return @facturiel(fact-1)*fact
+}
+
+main()-> void{
+	print(@fakturiel(5,1))
+}
+
+}
