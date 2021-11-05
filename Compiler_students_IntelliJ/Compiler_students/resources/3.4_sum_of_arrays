@@ -1,0 +1,27 @@
+program {
+fakturiel(int fact)->int{
+	return @facturiel(fact-1)*fact
+}
+
+main()-> void{
+
+	//Defining array
+	int[] arr = int[10];
+
+	int i=0;
+	
+	//Initializing array
+	while(i<=9){
+		i = i+1;
+	}
+
+	int sum=0;
+	i=0;
+	while(i<=9){
+		sum = sum+arr[i];
+	}
+
+	print(sum);
+}
+
+}
