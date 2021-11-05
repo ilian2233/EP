@@ -1,0 +1,264 @@
+<program>
+	<variable definition>
+		<type: int >
+		</type: int>
+		<assignment>
+			<variable: num>
+			</variable: num>
+			<int 0>
+			</int 0>
+		</assignment>
+	</variable definition>
+	<function: fib>
+		<formal parameters>
+			<typed variable>
+				<type: int >
+				</type: int>
+				<variable: num>
+				</variable: num>
+			</typed variable>
+			<typed variable>
+				<type: int[] >
+				</type: int[]>
+				<variable: memo>
+				</variable: memo>
+			</typed variable>
+		</formal parameters>
+		<type: int >
+		</type: int>
+		<block>
+			<if>
+				<greater>
+					<indexed variable: memo>
+						<variable: num>
+						</variable: num>
+					</indexed variable: memo>
+					<int 1>
+					</int 1>
+				</greater>
+				<block>
+					<return>
+						<indexed variable: memo>
+							<variable: num>
+							</variable: num>
+						</indexed variable: memo>
+					</return>
+				</block>
+			</if>
+			<if>
+				<equals>
+					<variable: num>
+					</variable: num>
+					<int 0>
+					</int 0>
+				</equals>
+				<block>
+					<return>
+						<int 0>
+						</int 0>
+					</return>
+				</block>
+			</if>
+			<if>
+				<equals>
+					<variable: num>
+					</variable: num>
+					<int 1>
+					</int 1>
+				</equals>
+				<block>
+					<return>
+						<int 1>
+						</int 1>
+					</return>
+				</block>
+			</if>
+			<variable definition>
+				<type: int >
+				</type: int>
+				<assignment>
+					<variable: res>
+					</variable: res>
+					<addition>
+						<function call: fib>
+							<actual parameters>
+								<subtraction>
+									<variable: num>
+									</variable: num>
+									<int 1>
+									</int 1>
+								</subtraction>
+								<variable: memo>
+								</variable: memo>
+							</actual parameters>
+						</function call: fib>
+						<function call: fib>
+							<actual parameters>
+								<subtraction>
+									<variable: num>
+									</variable: num>
+									<int 2>
+									</int 2>
+								</subtraction>
+								<variable: memo>
+								</variable: memo>
+							</actual parameters>
+						</function call: fib>
+					</addition>
+				</assignment>
+			</variable definition>
+			<assignment>
+				<indexed variable: memo>
+					<variable: num>
+					</variable: num>
+				</indexed variable: memo>
+				<variable: res>
+				</variable: res>
+			</assignment>
+			<return>
+				<variable: res>
+				</variable: res>
+			</return>
+		</block>
+	</function: fib>
+	<function: main>
+		<void>
+		</void>
+		<block>
+			<print>
+				<actual parameters>
+					<string literal>
+					</string literal>
+				</actual parameters>
+			</print>
+			<read>
+				<variable: num>
+				</variable: num>
+			</read>
+			<if>
+				<less>
+					<variable: num>
+					</variable: num>
+					<int 0>
+					</int 0>
+				</less>
+				<block>
+					<print>
+						<actual parameters>
+							<variable: num>
+							</variable: num>
+							<string literal>
+							</string literal>
+						</actual parameters>
+					</print>
+					<return>
+					</return>
+				</block>
+			</if>
+			<variable definition>
+				<type: int[] >
+				</type: int[]>
+				<assignment>
+					<variable: memo>
+					</variable: memo>
+					<array initialization>
+						<addition>
+							<variable: num>
+							</variable: num>
+							<int 1>
+							</int 1>
+						</addition>
+					</array initialization>
+				</assignment>
+			</variable definition>
+			<variable definition>
+				<type: int >
+				</type: int>
+				<assignment>
+					<variable: i>
+					</variable: i>
+					<int 0>
+					</int 0>
+				</assignment>
+			</variable definition>
+			<assignment>
+				<indexed variable: memo>
+					<int 0>
+					</int 0>
+				</indexed variable: memo>
+				<int 0>
+				</int 0>
+			</assignment>
+			<if>
+				<greater>
+					<variable: num>
+					</variable: num>
+					<int 0>
+					</int 0>
+				</greater>
+				<block>
+					<assignment>
+						<indexed variable: memo>
+							<int 1>
+							</int 1>
+						</indexed variable: memo>
+						<int 1>
+						</int 1>
+					</assignment>
+				</block>
+			</if>
+			<function call: fib>
+				<actual parameters>
+					<variable: num>
+					</variable: num>
+					<variable: memo>
+					</variable: memo>
+				</actual parameters>
+			</function call: fib>
+			<variable definition>
+				<type: char[] >
+				</type: char[]>
+				<assignment>
+					<variable: fib>
+					</variable: fib>
+					<string literal>
+					</string literal>
+				</assignment>
+			</variable definition>
+			<while>
+				<less or equal>
+					<variable: i>
+					</variable: i>
+					<variable: num>
+					</variable: num>
+				</less or equal>
+				<block>
+					<print>
+						<actual parameters>
+							<variable: fib>
+							</variable: fib>
+							<variable: i>
+							</variable: i>
+							<char literal>
+							</char literal>
+							<indexed variable: memo>
+								<variable: i>
+								</variable: i>
+							</indexed variable: memo>
+						</actual parameters>
+					</print>
+					<assignment>
+						<variable: i>
+						</variable: i>
+						<addition>
+							<variable: i>
+							</variable: i>
+							<int 1>
+							</int 1>
+						</addition>
+					</assignment>
+				</block>
+			</while>
+		</block>
+	</function: main>
+</program>

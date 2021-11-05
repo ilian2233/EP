@@ -1,0 +1,35 @@
+program {
+    int num = 0;
+
+    fib(int num, int[] memo) -> int {
+         if (memo[num] > 0) {
+            return memo[num];
+         }
+         if (num == 0)  { return 0; }
+         if (num == 1)  { return 1; }
+
+         int res = @fib(num - 1, memo) + @fib(num - 2, memo);
+         memo[num] = res;
+         return res;
+    }
+
+    main() -> void {
+        print("Please enter a non-negative number:");
+        read(num);
+        if (num < 0) {
+            print(num, "is a negative number, program will now terminate!");
+            return;
+        }
+        int[] memo = int[num + 1];
+        int i = 0;
+        memo[0] = 0;
+        if (num > 0) { memo[1] = 1; }
+        @fib(num, memo);
+        char[] fib = "Fibonacci number";
+        while (i <= num) {
+            print(fib, i , ':', memo[i]);
+            i = i + 1;
+        }
+    }
+
+}

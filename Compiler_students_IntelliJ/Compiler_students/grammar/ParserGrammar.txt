@@ -1,0 +1,128 @@
+MIT License
+
+Copyright (c) 2018 Computing and Engineering Department, Technical University of Varna
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+program                 : PROGRAM LBRACKET program_body  RBRACKET
+
+program_body            : ( variable_definition SEMICOLON | function_definition )* main_function
+
+main_function           : 'main' LPAREN RPAREN ARROW VOID block
+
+function_definition     : IDENTIFIER LPAREN ( formal_parameters )? RPAREN  ARROW ( VOID | type ) block
+
+formal_parameters       : type IDENTIFIER ( COMMA type IDENTIFIER )*
+
+type                    : primitive_type
+                        | array_type
+
+primitive_type          : INT
+                        | CHAR
+                        | BOOLEAN
+
+array_type              : primitive_type LSQUARE RSQUARE
+
+block                   : LBRACKET ( statement )* RBRACKET
+
+statement               : simple_statement SEMICOLON
+                        | compound_statement
+
+simple_statement        : variable_definition
+                        | assignment
+                        | function_call
+                        | return_statement
+                        | print_statement
+                        | read_statement
+
+compound_statement      : if_statement
+                        | while_statement
+
+variable_definition     : type assignment
+
+assignment              : variable BECOMES assignable
+
+function_call           : AT IDENTIFIER LPAREN ( actual_parameters )? RPAREN
+
+return_statement        : RETURN ( assignable )?
+
+print_statement			: PRINT LPAREN assignable ( COMMA assignable )* RPAREN
+
+//TODO: IDENTIFIER instead of variable to prevent indexed variable passed as argument
+read_statement          : READ  LPAREN variable ( COMMA variable )* RPAREN
+
+if_statement            : IF LPAREN expression RPAREN block
+                        | IF LPAREN expression RPAREN block ELSE block
+
+while_statement         : WHILE LPAREN expression RPAREN block
+
+actual_parameters       : assignable ( COMMA assignable )*
+
+assignable              : array_initialization
+                        | character_literal
+                        | string_literal
+                        | expression
+
+array_initialization    : primitive_type LSQUARE expression RSQUARE
+
+character_literal       : SINGLE_QUOTE CHAR_LITERAL SINGLE_QUOTE
+
+string_literal			: DOUBLE_QUOTES ( CHAR_LITERAL )* DOUBLE_QUOTES
+
+expression              : simple_expression
+                        | simple_expression relational_operator simple_expression
+
+simple_expression       : signed_term ( ( additive_operator | OR ) signed_term )*
+
+signed_term             : (unary_operator)? term
+
+term                    : factor ( ( multiplicative_operator | AND ) factor )*
+
+factor                  : variable
+                        | INT_LITERAL
+                        | BOOLEAN_LITERAl
+                        | LPAREN expression RPAREN
+                        | function_call
+                        | array_length
+
+relational_operator     : EQUAL
+                        | NOT_EQUAL
+                        | GREATER_THAN
+                        | LESS_THAN
+                        | GREATER_THAN_OR_EQUAL
+                        | LESS_THAN_OR_EQUAL
+
+unary_operator          : NOT
+                        | MINUS
+
+additive_operator       : PLUS
+                        | MINUS
+
+multiplicative_operator : MUL
+                        | DIV
+                        | MOD
+
+variable                : IDENTIFIER
+                        | index_variable
+
+index_variable          : IDENTIFIER LSQUARE simple_expression RSQUARE
+
+array_length            : LENGTH LPAREN variable RPAREN

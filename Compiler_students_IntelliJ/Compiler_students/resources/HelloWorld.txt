@@ -1,0 +1,17 @@
+program {
+  main() -> void {
+    //int a = (2 + 2) * 2;
+    //print("a = ", a);
+    int c = 0;
+    char[] a = "This is an array of characters";
+    a[(2+1)*2] = 'A';
+    if (c == 0) {
+        a[0] = 'B';
+    }
+    else {
+        a[0] = 'A';
+    }
+    //print(b);
+    //print('A');
+  }
+}
