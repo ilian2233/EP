@@ -1,0 +1,13 @@
+int a, int b
+
+                    formal_parameters
+                            |
+             -------------------------------------
+             |      |         |     |            |
+            type    |         |   type           |
+             |      |         |     |            |
+     primitive_type |         |  primitive_type  |
+         |          |         |     |            |
+        INT     IDENTIFIER  COMMA  INT       IDENTIFIER
+         |          |         |     |            |
+         int        a         ,    int           b

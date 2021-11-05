@@ -1,0 +1,31 @@
+while ( i > 0 ) num = num + 1
+//Не е еизречение от езика защото няма {} и ;?
+
+                    while_statement
+                            |
+             ---------------------------------------------------------
+            WHILE LPAREN expression RPAREN                          block
+               |    |        |         |                              |
+             while  (        |         )                 LBRACKET statement RBRACKET
+                             |                              |         |         |
+                             |                              {         |         }
+                             |                                   simple_statement SEMICOLON
+       simple_expression relational_operator simple_expression         |              |
+                |                 |                 |              assignment         ;
+               term         GREATER_THAN           term                |
+                |                                   |      variable BECOMES assignable
+              factor                            INT_LITERAL   |        |        |
+                |                                   |     IDENTIFIER   =    expression
+             variable                               0         |                 |
+                |                                            num                |
+            IDENTIFIER                                       signed_term additive_operator signed_term
+                |                                                  |             |              |
+                i                                                 term          PLUS           term
+                                                                   |             |              |
+                                                                 factor          +            factor
+                                                                   |                            |
+                                                                variable                    INT_LITERAL
+                                                                   |                            |
+                                                               IDENTIFIER                       1
+                                                                   |
+                                                                  num
