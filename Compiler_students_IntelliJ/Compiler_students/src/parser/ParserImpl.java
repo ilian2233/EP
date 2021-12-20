@@ -51,6 +51,7 @@ import bg.tu_varna.kst_sit.ci_ep.exceptions.SyntaxException;
 import bg.tu_varna.kst_sit.ci_ep.lexer.Lexer;
 import bg.tu_varna.kst_sit.ci_ep.lexer.token.Token;
 import bg.tu_varna.kst_sit.ci_ep.parser.Parser;
+import bg.tu_varna.kst_sit.ci_ep.semantics.symbol.Symbol;
 import bg.tu_varna.kst_sit.ci_ep.source.SourceImpl;
 import bg.tu_varna.kst_sit.ci_ep.utils.CompilerTestHelper;
 import lexer.LexerImpl;
@@ -88,7 +89,7 @@ public class ParserImpl extends Parser<TokenType, AST> {
         while(
                 TokenType.isPrimitiveType(currentToken.getTokenType()) ||
                         (currentToken.getTokenType() == TokenType.IDENTIFIER && !currentToken.getText().equals("main"))
-                ) {
+        ) {
             if (currentToken.getTokenType() == TokenType.IDENTIFIER) {
                 functionDefinition();
             } else {
@@ -104,40 +105,40 @@ public class ParserImpl extends Parser<TokenType, AST> {
 
     void functionDefinition() {
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.IDENTIFIER);
+        accept(TokenType.LPAREN);
         FormalParameterNode formalParameters = null;
         if (TokenType.isPrimitiveType(currentToken.getTokenType())) {
-            /* ToDo SyntaxAnalysis  - handle symbol */
+            formalParameters();
             formalParameters = (FormalParameterNode) currentNode;
         }
 
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.RPAREN);
+        accept(TokenType.ARROW);
         TypeNode typeNode;
         if (currentToken.getTokenType() == TokenType.VOID) {
             typeNode = new VoidTypeNode(currentToken);
-            /* ToDo handle symbol */
+            accept(TokenType.VOID);
         } else {
-            /* ToDo handle symbol */
+            type();
             typeNode = (TypeNode) currentNode;
         }
-        /* ToDo handle symbol */
+        block();
         BlockNode blockNode = (BlockNode)currentNode;
         currentNode = new FunctionDefinitionNode(token, formalParameters, typeNode, blockNode);
     }
 
     void functionCall() {
-        /* ToDo handle symbol */
+        accept(TokenType.AT);
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.IDENTIFIER);
+        accept(TokenType.LPAREN);
         ActualParameterNode actualParameters = null;
         if (TokenType.isLiteralTerminal(currentToken.getTokenType())) {
-            /* ToDo handle symbol */
+            actualParameters();
             actualParameters = (ActualParameterNode) currentNode;
         }
-        /* ToDo handle symbol */
+        accept(TokenType.RPAREN);
         currentNode = new FunctionCall(token, actualParameters);
     }
 
@@ -148,8 +149,8 @@ public class ParserImpl extends Parser<TokenType, AST> {
             accept(currentToken.getTokenType());
             if (currentToken.getTokenType() == TokenType.LSQUARE) {
                 isArray = true;
-                /* ToDo handle symbol */
-                /* ToDo handle symbol */
+                accept(TokenType.LSQUARE);
+                accept(TokenType.RSQUARE);
             }
         } else {
             throw new SyntaxException("Expected return type. Got " + currentToken.getTokenType().value, currentToken);
@@ -159,42 +160,42 @@ public class ParserImpl extends Parser<TokenType, AST> {
 
     void formalParameters() {
         List<TypedVariableNode> formalParameters = new ArrayList<>();
-        /* ToDo handle symbol */
+        type();
         formalParameters.add(new TypedVariableNode(null, (TypeNode) currentNode, new VariableNode(currentToken, null)));
-        /* ToDo handle symbol */
+        accept(TokenType.IDENTIFIER);
         while (currentToken.getTokenType() == TokenType.COMMA) {
-            /* ToDo handle symbol */
-            /* ToDo handle symbol */
+            accept(TokenType.COMMA);
+            type();
             formalParameters.add(new TypedVariableNode(null, (TypeNode) currentNode, new VariableNode(currentToken, null)));
-            /* ToDo handle symbol */
+            accept(TokenType.IDENTIFIER);
         }
         currentNode = new FormalParameterNode(null, formalParameters);
     }
 
     void actualParameters() {
         List<AssignableNode> params = new ArrayList<>();
-        /* ToDo handle symbol */
+        assignable();
         params.add((AssignableNode) currentNode);
         while(currentToken.getTokenType() == TokenType.COMMA) {
-            /* ToDo handle symbol */
-            /* ToDo handle symbol */
+            accept(TokenType.COMMA);
+            assignable();
             params.add((AssignableNode) currentNode);
         }
         currentNode = new ActualParameterNode(null, params);
     }
 
     void variableDefinition() {
-        /* ToDo handle symbol */
+        type();
         TypeNode type = (TypeNode)currentNode;
-        /* ToDo handle symbol */
+        assignment();
         currentNode = new VariableDefinitionNode(null, type, (AssignmentNode) currentNode);
     }
 
     void assignment() {
-        /* ToDo handle symbol */
+        variable();
         VariableNode variable = (VariableNode) currentNode;
         Token token = currentToken;
-        /* ToDo handle symbol */
+        accept(TokenType.BECOMES);
         if (TokenType.isPrimitiveType(currentToken.getTokenType())) {
             arrayInitialization();
         } else if (TokenType.CHAR_LITERAL == currentToken.getTokenType()) {
@@ -212,11 +213,17 @@ public class ParserImpl extends Parser<TokenType, AST> {
         Token token = currentToken;
         ExpressionNode expression = null;
         if (TokenType.isPrimitiveType(currentToken.getTokenType())) {
-            /* ToDo handle symbol currentToken (currentToken.getTokenType()) */
-            /* ToDo handle symbol */
-            /* ToDo handle symbol */
+            switch (currentToken.getTokenType())
+            {
+                case INT -> accept(TokenType.INT);
+                case CHAR -> accept(TokenType.CHAR);
+                case BOOLEAN -> accept(TokenType.BOOLEAN);
+                default -> throw new SyntaxException("Expected primitive type. Got " + currentToken.getTokenType(), currentToken);
+            }
+            accept(TokenType.LSQUARE);
+            expression();
             expression = (ExpressionNode) currentNode;
-            /* ToDo handle symbol */
+            accept(TokenType.RSQUARE);
         } else {
             System.out.println("Expected array initialization. Got " + currentToken.getTokenType());
         }
@@ -225,53 +232,66 @@ public class ParserImpl extends Parser<TokenType, AST> {
 
     void block() {
         List<Statement> statements = new ArrayList<>();
-        /* ToDo handle symbol */
+        accept(TokenType.LBRACKET);
         while (TokenType.isStatementTerminal(currentToken.getTokenType())) {
-            /* ToDo handle symbol */
+            statement();
             statements.add((Statement) currentNode);
         }
-        /* ToDo handle symbol */
+        accept(TokenType.RBRACKET);
         currentNode = new BlockNode(null, statements);
     }
 
     void expression() {
-        /* ToDo handle symbol */
+        simpleExpression();
         Token<TokenType> token = currentToken;
         ExpressionNode left = (ExpressionNode) currentNode;
         //currentNode points to the simpleExpression no need to assign
         if (TokenType.isRelationalOperator(currentToken.getTokenType())) {
             ExpressionNode right;
             ExpressionNode relationalOperator = null;
-            /* ToDo handle symbol currentToken (currentToken.getTokenType()) */
-            /* ToDo handle symbol */
+            switch (currentToken.getTokenType())
+            {
+                case EQUALS -> accept(TokenType.EQUALS);
+                case NOTEQUALS -> accept(TokenType.NOTEQUALS);
+                case GREATER -> accept(TokenType.GREATER);
+                case GREATER_EQ -> accept(TokenType.GREATER_EQ);
+                case LESS -> accept(TokenType.LESS);
+                case LESS_EQ -> accept(TokenType.LESS_EQ);
+            }
+            simpleExpression();
             right = (ExpressionNode) currentNode;
             switch (token.getTokenType()) {
-                case EQUALS:        relationalOperator = new EqualsNode(token, left, right); break;
-                case NOTEQUALS:     relationalOperator = new NotEqualNode(token, left, right); break;
-                case GREATER:       relationalOperator = new GreaterNode(token, left, right); break;
-                case GREATER_EQ:    relationalOperator = new GreaterOrEqualNode(token, left, right); break;
-                case LESS:          relationalOperator = new LessNode(token, left, right); break;
-                case LESS_EQ:       relationalOperator = new LessOrEqualNode(token, left, right); break;
+                case EQUALS -> relationalOperator = new EqualsNode(token, left, right);
+                case NOTEQUALS -> relationalOperator = new NotEqualNode(token, left, right);
+                case GREATER -> relationalOperator = new GreaterNode(token, left, right);
+                case GREATER_EQ -> relationalOperator = new GreaterOrEqualNode(token, left, right);
+                case LESS -> relationalOperator = new LessNode(token, left, right);
+                case LESS_EQ -> relationalOperator = new LessOrEqualNode(token, left, right);
             }
             currentNode = relationalOperator;
         }
     }
 
     void simpleExpression() {
-        /* ToDo handle symbol */
+        signedTerm();
         ExpressionNode left = (ExpressionNode) currentNode;
         //PLUS, MINUS, OR
         while (TokenType.isOperatorGroupOne(currentToken.getTokenType())) {
             Token<TokenType> token = currentToken;
-            /* ToDo handle symbol currentToken (currentToken.getTokenType()) */
-            /* ToDo handle symbol */
-            ExpressionNode right = (ExpressionNode) currentNode;
-            ExpressionNode additiveOperator = null;
-            switch (token.getTokenType()) {
-                case PLUS:  additiveOperator = new AdditionNode(token, left, right); break;
-                case MINUS: additiveOperator = new SubtractionNode(token, left, right); break;
-                case OR:    additiveOperator = new OrNode(token, left, right); break;
+            switch (currentToken.getTokenType())
+            {
+                case PLUS -> accept(TokenType.PLUS);
+                case MINUS -> accept(TokenType.MINUS);
+                case OR -> accept(TokenType.OR);
             }
+            signedTerm(); // Technically could also be simple expression.
+            ExpressionNode right = (ExpressionNode) currentNode;
+            ExpressionNode additiveOperator = switch (token.getTokenType()) {
+                case PLUS -> new AdditionNode(token, left, right);
+                case MINUS -> new SubtractionNode(token, left, right);
+                case OR -> new OrNode(token, left, right);
+                default -> null;
+            };
             currentNode = left = additiveOperator;
         }
     }
@@ -280,137 +300,149 @@ public class ParserImpl extends Parser<TokenType, AST> {
         Token<TokenType> token = null;
         if (TokenType.isUnaryOperator(currentToken.getTokenType())) {
             token = currentToken;
-            /* ToDo handle symbol currentToken (currentToken.getTokenType()) */
+            switch (currentToken.getTokenType())
+            {
+                case NOT -> accept(TokenType.NOT);
+                case MINUS -> accept(TokenType.MINUS);
+                default -> throw new SyntaxException("TODO Text", currentToken);
+            }
         }
-        /* ToDo handle symbol */
+        term();
         ExpressionNode operand = (ExpressionNode) currentNode;
         if (token != null) {
             switch (token.getTokenType()) {
-                case NOT: operand = new NotNode(token, operand); break;
-                case MINUS: operand = new MinusNode(token, operand); break;
+                case NOT -> operand = new NotNode(token, operand);
+                case MINUS -> operand = new MinusNode(token, operand);
             }
         }
         currentNode = operand;
     }
 
     void term() {
-        /* ToDo handle symbol */
+        factor();
         ExpressionNode left = (ExpressionNode) currentNode;
         //MUL, DIV, MOD, AND
         while (TokenType.isOperatorGroupTwo(currentToken.getTokenType())) {
             Token<TokenType> token = currentToken;
-            /* ToDo handle symbol currentToken (currentToken.getTokenType()) */
-            /* ToDo handle symbol */
-            ExpressionNode right = (ExpressionNode) currentNode;
-            ExpressionNode multiplicativeOperator = null;
-            switch (token.getTokenType()) {
-                case MUL: multiplicativeOperator = new MultiplicationNode(token, left, right); break;
-                case DIV: multiplicativeOperator = new DivisionNode(token, left, right); break;
-                case MOD: multiplicativeOperator = new ModNode(token, left, right); break;
-                case AND: multiplicativeOperator = new AndNode(token, left, right); break;
+            switch (currentToken.getTokenType())
+            {
+                case MUL -> accept(TokenType.MUL);
+                case DIV -> accept(TokenType.DIV);
+                case MOD -> accept(TokenType.MOD);
+                default -> throw new SyntaxException("Placeholder text", currentToken);
             }
+            factor();
+            ExpressionNode right = (ExpressionNode) currentNode;
+            ExpressionNode multiplicativeOperator = switch (token.getTokenType()) {
+                case MUL -> new MultiplicationNode(token, left, right);
+                case DIV -> new DivisionNode(token, left, right);
+                case MOD -> new ModNode(token, left, right);
+                case AND -> new AndNode(token, left, right);
+                default -> null;
+            };
             currentNode = left = multiplicativeOperator;
         }
     }
 
     void factor() {
-        switch(currentToken.getTokenType()) {
-            case IDENTIFIER:    /* ToDo handle symbol */
-                                break;
-            case NUMBER:        currentNode = new IntegerNode(currentToken);
-                                /* ToDo handle symbol */
-                                break;
-            case TRUE:
-            case FALSE:         currentNode = new BooleanNode(currentToken);
-                                /* ToDo handle symbol currentToken (currentToken.getTokenType()) */
-                                break;
-            case LENGTH:        /* ToDo handle symbol */
-                                break;
-            case LPAREN:        /* ToDo handle symbol */
-                                /* ToDo handle symbol */
-                                /* ToDo handle symbol */
-                                break;
-            case AT:            /* ToDo handle symbol */
-                                break;
-            default:   throw new SyntaxException("Expected factor. Got " + currentToken.getTokenType().value, currentToken);
+        switch (currentToken.getTokenType()) {
+            case IDENTIFIER -> variable();
+            case NUMBER -> {
+                currentNode = new IntegerNode(currentToken);
+                accept(TokenType.NUMBER);
+            }
+            case TRUE, FALSE -> {
+                currentNode = new BooleanNode(currentToken);
+                if (currentToken.getTokenType() == TokenType.TRUE) {
+                    accept(TokenType.TRUE);
+                } else {
+                    accept(TokenType.FALSE);
+                }
+            }
+            case LENGTH -> arrayLength();
+            case LPAREN -> {
+                accept(TokenType.LPAREN);
+                expression();
+                accept(TokenType.RPAREN);
+            }
+            case AT -> functionCall();
+            default -> throw new SyntaxException("Expected factor. Got " + currentToken.getTokenType().value, currentToken);
         }
     }
 
     void variable() {
         Token token = currentToken;
-        /* ToDo handle symbol */
+        accept(TokenType.IDENTIFIER);
         ExpressionNode expression = null;
         if (currentToken.getTokenType() == TokenType.LSQUARE) {
-            /* ToDo handle symbol */
-            /* ToDo handle symbol */
+            accept(TokenType.LSQUARE);
+            simpleExpression();
             expression = (ExpressionNode) currentNode;
-            /* ToDo handle symbol */
+            accept(TokenType.RSQUARE);
         }
         currentNode = new VariableNode(token, expression);
     }
 
     void mainFunction() {
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        if (!currentToken.getText().equals("main"))
+        {
+            throw new SyntaxException(
+                    "Expected main function to be named 'main'. Got " + currentToken.getText(), currentToken);
+        }
+
+        accept(TokenType.IDENTIFIER);
+        accept(TokenType.LPAREN);
+        accept(TokenType.RPAREN);
+        accept(TokenType.ARROW);
         TypeNode typeNode = new VoidTypeNode(currentToken);
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.VOID);
+        block();
         currentNode = new FunctionDefinitionNode(token, null, typeNode, (BlockNode) currentNode);
     }
 
     void statement() {
         if (TokenType.isCompoundStatementTerminal(currentToken.getTokenType())) {
-            /* ToDo handle symbol */
+            compoundStatement();
         } else {
-            /* ToDo handle symbol */
-            /* ToDo handle symbol */
+            simpleStatement();
+            accept(TokenType.SEMICOLON);
         }
     }
 
     void simpleStatement() {
-        switch(currentToken.getTokenType()) {
-            case INT:
-            case CHAR:
-            case BOOLEAN:       /* ToDo handle symbol */
-                                break;
-            case IDENTIFIER:    /* ToDo handle symbol */
-                                break;
-            case AT:            /* ToDo handle symbol */
-                                break;
-            case RETURN:        /* ToDo handle symbol */
-                                break;
-            case PRINT:         /* ToDo handle symbol */
-                                break;
-            case READ:          /* ToDo handle symbol */
-                                break;
-            default: throw new SyntaxException("Expected simpleStatement. Got " + currentToken.getTokenType().value, currentToken);
+        switch (currentToken.getTokenType()) {
+            case INT, CHAR, BOOLEAN -> variableDefinition();
+            case IDENTIFIER -> assignment();
+            case AT -> functionCall();
+            case RETURN -> returnStatement();
+            case PRINT -> printStatement();
+            case READ -> readStatement();
+            default -> throw new SyntaxException("Expected simpleStatement. Got " + currentToken.getTokenType().value, currentToken);
         }
     }
 
     void compoundStatement() {
         if (currentToken.getTokenType() == TokenType.IF) {
-            /* ToDo handle symbol */
+            ifStatement();
         } else {
-            /* ToDo handle symbol */
+            whileStatement();
         }
     }
 
     void ifStatement() {
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.IF);
+        accept(TokenType.LPAREN);
+        expression();
         ExpressionNode expressionNode = (ExpressionNode) currentNode;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.RPAREN);
+        block();
         BlockNode ifStatement = (BlockNode) currentNode;
         BlockNode elseStatement = null;
         if (currentToken.getTokenType() == TokenType.ELSE) {
-            /* ToDo handle symbol */
-            /* ToDo handle symbol */
+            accept(TokenType.ELSE);
+            block();
             elseStatement = (BlockNode) currentNode;
         }
         currentNode = new IfStatementNode(token, expressionNode, ifStatement, elseStatement);
@@ -418,22 +450,24 @@ public class ParserImpl extends Parser<TokenType, AST> {
 
     void whileStatement() {
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.WHILE);
+        accept(TokenType.LPAREN);
+        expression();
         ExpressionNode expressionNode = (ExpressionNode) currentNode;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.RPAREN);
+        block();
         BlockNode blockNode = (BlockNode) currentNode;
         currentNode = new WhileStatementNode(token, expressionNode, blockNode);
     }
 
     void returnStatement() {
         Token token = currentToken;
-        /* ToDo handle symbol */
+        accept(TokenType.RETURN);
         AssignableNode assignable = null;
-        if (TokenType.isLiteralTerminal(currentToken.getTokenType())) {
-            /* ToDo handle symbol */
+        if (TokenType.isLiteralTerminal(currentToken.getTokenType()) ||
+                TokenType.isFactorTerminal(currentToken.getTokenType()) ||
+                TokenType.isUnaryOperator(currentToken.getTokenType())) {
+            assignable();
             assignable = (AssignableNode) currentNode;
         }
         currentNode = new ReturnStatementNode(token, assignable);
@@ -441,11 +475,11 @@ public class ParserImpl extends Parser<TokenType, AST> {
 
     void printStatement() {
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.PRINT);
+        accept(TokenType.LPAREN);
+        actualParameters();
         ActualParameterNode actualParameters = (ActualParameterNode) currentNode;
-        /* ToDo handle symbol */
+        accept(TokenType.RPAREN);
         currentNode = new PrintStatementNode(token, actualParameters);
     }
 
@@ -463,7 +497,7 @@ public class ParserImpl extends Parser<TokenType, AST> {
     }
 
     void assignable() {
-        if (TokenType.isFactorTerminal(currentToken.getTokenType())) {
+        if (TokenType.isFactorTerminal(currentToken.getTokenType()) || TokenType.isUnaryOperator(currentToken.getTokenType())) {
             expression();
         } else if (TokenType.isPrimitiveType(currentToken.getTokenType())) {
             arrayInitialization();
@@ -478,26 +512,24 @@ public class ParserImpl extends Parser<TokenType, AST> {
         currentNode = new CharacterLiteralNode(currentToken);
         accept(TokenType.CHAR_LITERAL);
     }
-	
-	void stringLiteral() {
+
+    void stringLiteral() {
         currentNode = new StringLiteralNode(currentToken);
         accept(TokenType.STRING_LITERAL);
-	}
+    }
 
     void arrayLength() {
         Token token = currentToken;
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
-        /* ToDo handle symbol */
+        accept(TokenType.LENGTH);
+        accept(TokenType.LPAREN);
+        variable();
+        accept(TokenType.RPAREN);
         currentNode = new ArrayLengthNode(token, (VariableNode) currentNode);
     }
 
     public static void main(String[] args) throws IOException {
-        Lexer<TokenType> lexer = new LexerImpl(new SourceImpl("resources/Fib.txt"));
+        Lexer<TokenType> lexer = new LexerImpl(new SourceImpl("resources/HelloWorld.txt"));
         Parser<TokenType, AST> parser = new ParserImpl(lexer);
         System.out.println(CompilerTestHelper.getASTasString(parser));
     }
-
-
 }

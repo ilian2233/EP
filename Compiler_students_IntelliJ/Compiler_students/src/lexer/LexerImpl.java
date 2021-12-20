@@ -55,11 +55,11 @@ public class LexerImpl extends Lexer<TokenType> {
                 case ' ' : case '\t' : handleSpaceAndTabs(); continue;
 
                 //2 character operators
-                case '-' : return handleTwoCharOp('-', TokenType.MINUS, TokenType.ARROW);
+                case '-' : return handleTwoCharOp('>', TokenType.MINUS, TokenType.ARROW);
                 case '=' : return handleTwoCharOp('=', TokenType.BECOMES, TokenType.EQUALS);
-                case '>' : return handleTwoCharOp('>', TokenType.GREATER, TokenType.GREATER_EQ);
-                case '<' : return handleTwoCharOp('<', TokenType.LESS, TokenType.LESS_EQ);
-                case '!' : return handleTwoCharOp('!', TokenType.NOT,TokenType.NOTEQUALS);
+                case '>' : return handleTwoCharOp('=', TokenType.GREATER, TokenType.GREATER_EQ);
+                case '<' : return handleTwoCharOp('=', TokenType.LESS, TokenType.LESS_EQ);
+                case '!' : return handleTwoCharOp('=', TokenType.NOT,TokenType.NOTEQUALS);
                 case '&' : return handleTwoCharOp('&', TokenType.AND, TokenType.OTHER);
                 case '|' : return handleTwoCharOp('|', TokenType.OR, TokenType.OTHER);
                 case '/' : return handleSlash();
@@ -212,7 +212,7 @@ public class LexerImpl extends Lexer<TokenType> {
     }
 
     public static void main(String[] args) throws IOException {
-        Lexer<TokenType> lexer = new LexerImpl(new SourceImpl("resources/operators.txt"));
+        Lexer<TokenType> lexer = new LexerImpl(new SourceImpl("resources/HelloWorld.txt"));
         System.out.println(CompilerTestHelper.getTokensAsString(lexer));
     }
 

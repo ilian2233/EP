@@ -25,7 +25,6 @@ import bg.tu_varna.kst_sit.ci_ep.code_generator.CodeGenVisitor;
 import bg.tu_varna.kst_sit.ci_ep.code_generator.CodeGeneratorHelper;
 import bg.tu_varna.kst_sit.ci_ep.code_generator.Context;
 import bg.tu_varna.kst_sit.ci_ep.code_generator.OperationCode;
-import bg.tu_varna.kst_sit.ci_ep.lexer.Lexer;
 import bg.tu_varna.kst_sit.ci_ep.parser.Parser;
 import bg.tu_varna.kst_sit.ci_ep.semantics.scope.Scope;
 import bg.tu_varna.kst_sit.ci_ep.semantics.symbol.Symbol;
@@ -490,8 +489,8 @@ public class CodeGenerator implements CodeGenVisitor {
     }
 
     public static void main(String[] args) throws IOException {
-        Lexer<TokenType> lexer = new LexerImpl(new SourceImpl("resources/Fib.txt"));
-        Parser<TokenType, AST> parser = new ParserImpl(lexer);
+        LexerImpl lexer = new LexerImpl(new SourceImpl("resources/Fib.txt"));
+        ParserImpl parser = new ParserImpl(lexer);
         ProgramBodyNode root = (ProgramBodyNode) parser.entryRule();
         SemanticVisitor semanticVisitor = new SemanticAnalyzer();
         semanticVisitor.visit(root);
